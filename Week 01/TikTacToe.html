@@ -40,9 +40,41 @@
     }
     
     function move(x,y){
-        checkerBoard[x][y] = color;
-        color = 3-color
-        show()
+        if(checkerBoard[x][y]==0){
+            checkerBoard[x][y] = color;
+            if(check()){
+                alert(color == 2?"x赢了":"o赢了")
+            }
+            color = 3-color
+            show()  
+        }else{
+            alert('该位置已落子')
+        }
+        
+    }
+    function check(){
+        for(let i = 0;i<3;i++){
+            let win = true;
+            for(let y = 0;y<3;y++){
+                if(checkerBoard[i][y] !=color){
+                    win = false;
+                }
+            }
+            if(win){
+                return true
+            }
+        }
+        for (let i = 0; i < 3; i++) {
+            let win = true;
+            for (let y = 0; y < 3; y++) {
+                if (checkerBoard[y][i] != color) {
+                    win = false;
+                }
+            }
+            if (win) {
+                return true
+            }
+        }
     }
     show();
 </script>
