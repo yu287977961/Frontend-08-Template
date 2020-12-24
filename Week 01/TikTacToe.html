@@ -30,10 +30,18 @@
             for(let j=0;j<checkerBoard[i].length;j++){
                 let lattice = document.createElement('div');
                 lattice.classList.add("lattice")
-                lattice.innerText = checkerBoard[i][j] == 2?'x':
-                checkerBoard[i][j] == 1?'o':'';
-                lattice.addEventListener('click',()=>{move(i,j)})
-                dataDom.appendChild(lattice);
+                if(data != 1){
+                    lattice.innerText = checkerBoard[i][j] == 2?'x':
+                    checkerBoard[i][j] == 1?'o':'';
+                    lattice.addEventListener('click',()=>{move(i,j)})
+                    dataDom.appendChild(lattice);
+                }else if(data == 1){
+                    console.log(111)
+                    lattice.innerText = ''
+                    lattice.addEventListener('click', () => { move(i, j) })
+                    dataDom.appendChild(lattice);
+                }
+                
             }
             dataDom.appendChild(document.createElement('br'))
         }
@@ -42,8 +50,10 @@
     function move(x,y){
         if(checkerBoard[x][y]==0){
             checkerBoard[x][y] = color;
-            if(check()){
+            if(check(checkerBoard,color)){
                 alert(color == 2?"x赢了":"o赢了")
+                show(1);
+                return
             }
             color = 3-color
             show()  
@@ -52,7 +62,7 @@
         }
         
     }
-    function check(){
+    function check(checkerBoard,color){
         for(let i = 0;i<3;i++){
             let win = true;
             for(let y = 0;y<3;y++){
@@ -75,6 +85,80 @@
                 return true
             }
         }
+        {
+            let win = true;
+            for (let i = 0; i < 3; i++) {
+                
+                if (checkerBoard[i][i] != color) {
+                        win = false;
+                }
+                
+            } 
+            if (win) {
+                return true
+            }
+        }
+        {
+            let win = true;
+            for (let i = 0; i < 3; i++) {
+                
+                if (checkerBoard[i][2-i] != color) {
+                    win = false;
+                }
+                
+            }
+            if (win) {
+                return true
+            }
+        }
+    }
+    function clone(checkerBoard){
+        return JSON.parse(JSON.stringify(checkerBoard))
+    }
+    function willWin(checkerBoard,color){
+        for (let i = 0; i < 3; i++) {
+            for (let y = 0; y < 3; y++) {
+                if (checkerBoard[i][y]) {
+                    continue
+                }
+                let tmp = clone(checkerBoard)
+                tmp[i][y] = color
+                if(check(tmp,color)){
+                    return [y,i]
+                }
+            }
+        }
+        return null
+    }
+    function bestchoice(checkerBoard, color){
+        let p;
+        if(p = willWin(checkerBoard, color)){
+            return {
+                point:p,
+                result:1
+            }
+        }
+        let result = -2
+        let point  = null
+        for (let i = 0; i < 3; i++) {
+            for (let y = 0; y < 3; y++) {
+                if (checkerBoard[i][y]) {
+                    continue
+                }
+                 let tmp = clone(checkerBoard)
+                tmp[i][y] = color
+                let r = bestchoice(tmp,3-color).result;
+                if (-r>result) {
+                    result = -r;
+                    point = [y,i]
+                }
+            }
+        }
+        return {
+            point : point,
+            result:point?result:0
+        }
     }
     show();
+    console.log(bestchoice(checkerBoard, color))
 </script>
