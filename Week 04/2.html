@@ -1,0 +1,52 @@
+
+    function kmp(source,pattern){
+        //增加了力扣的边边角角，已通过力扣28题。
+        if((source===pattern)||(source.length>0&&pattern.length==0)){
+            return 0
+        }else if(source.length==0&&pattern.length>0){
+            return -1
+        }
+        let table = new Array(pattern.length).fill(0)
+        // 计算表格
+        // abcdabce   abce
+        {
+            let i = 1,j = 0;
+            while(i < pattern.length){
+                if (pattern[i] == pattern[j]){
+                    ++i,++j;
+                    table[i] = j //当i = 1 j = 0的时候，假设匹配上了，则table[i]的位置重复数为j，也就是在//aabbccaa的情况下表格数的第一位为0 第二位也是0，第二位代表的是前面的匹配数量 
+                }else{
+                    if(j>0)
+                        j = table[j];
+                    else{
+                        ++i
+                    }
+                        
+                }
+                    
+            }
+        }
+        {
+            let i = 0,j = 0;
+            while(i < source.length){
+                if (pattern[j] === source[i]){
+                    ++i,++j;
+                }else{
+                    if(j>0)
+                        j = table[j];
+                    else{
+                        ++i
+                    }
+                        
+                }
+                if(j === pattern.length)
+                    //返回的是匹配到的第一个元素的位置
+                    return i-pattern.length;
+                    
+            }
+            return -1;
+        }
+        
+    }
+    
+console.log(kmp('hello','ll'))
