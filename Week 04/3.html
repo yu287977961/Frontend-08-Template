@@ -1,0 +1,57 @@
+<script>
+    function find(source,pattern){
+        let startCount = 0;
+        //找到星号的数量
+        for(let i = 0;i<pattern.length;i++){
+            if(pattern[i]=='*'){
+                startCount++;
+            }
+        }
+        // 没有星号的情况，一一匹配
+        if(startCount === 0){
+            for(let i = 0;i<pattern.length;i++){
+                if(pattern[i]!=source[i]&&pattern[i]!="?"){
+                    return false;
+                }
+            }
+            return
+        }
+        // 第一个星号之前的部分
+        let i = 0;
+        let lastIndex = 0;//原字符串source的位置
+        //匹配第一个星之前的字符
+        //没匹配到还是return出去
+        for(i=0;pattern[i]!="*";i++){
+            if(pattern[i]!=source[i]&&pattern[i]!="?"){
+                    return false;
+                }
+        }
+        //匹配到了则字符串source的位置挪到i的位置。
+        lastIndex = i;
+        //进行去掉最后一个星的情况进行匹配
+        for(let p = 0;p<startCount-1;p++){
+            i++;
+            let subPattern = "";
+            //把星到星之间的字符拿出来放到subPattern当中
+            while(pattern[i]!="*"){
+                subPattern +=pattern[i]
+                i++
+            }
+            let reg = new RegExp(subPattern.replace(/\?/g,"[\\s\\S]"),"g");
+            reg.lastIndex = lastIndex;
+            if(!reg.exec(source))
+                return false;
+            
+            lastIndex = reg.lastIndex
+
+        }
+        //从后往前循环，找到尾巴的*后的字符串，循环到最后一个星后停止循环。
+        for(let j = 0; j <= source.length - lastIndex && pattern[pattern.length - j] !== "*"; j++) {
+            if(pattern[pattern.length - j] !== source[source.length - j] && pattern[pattern.length - j] !== "?")
+                return false;
+        }
+        return true ;
+
+    }
+    
+</script>
