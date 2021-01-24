@@ -1,0 +1,88 @@
+<input type="range" id="r" min="0" max="255">
+<input type="range" id="g" min="0" max="255">
+<input type="range" id="b" min="0" max="255">
+<div style="width: 100px;height: 100px;" id="color"></div>
+<script>
+    let callbacks = new Map();
+
+    let usedReactivties = [];
+    //缓存
+    let reactivties = new Map();
+
+    let object = {
+        r:1,
+        g:1,
+        b:1
+    }
+
+    let po = reactive(object)
+    //调用effect函数，传一个callback参数。
+    effect(()=>{
+        document.getElementById("r").value = po.r
+    })
+    effect(()=>{
+        document.getElementById("g").value = po.g
+    })
+    effect(()=>{
+        document.getElementById("b").value = po.b
+    })
+
+    document.getElementById('r').addEventListener('input',event=>po.r = event.target.value)
+    document.getElementById('g').addEventListener('input',event=>po.g = event.target.value)
+    document.getElementById('b').addEventListener('input',event=>po.b = event.target.value)
+
+    effect(()=>{
+        document.getElementById("color").style.backgroundColor = `rgb(${po.r},${po.g},${po.b})`
+    })
+
+    function effect(callback){
+        // callbacks.push(callback)
+        usedReactivties = [];
+        callback()
+        console.log(usedReactivties)
+        for(let reactive of usedReactivties){
+            //此刻的reactive是一个二元组，所以通过判断callbacks当中是否有reactive[0]这个key来做防御措施，防止多次注册。
+            if(!callbacks.has(reactive[0])){
+                callbacks.set(reactive[0],new Map());
+            }
+            if(!callbacks.get(reactive[0]).has(reactive[1])){
+                callbacks.get(reactive[0]).set(reactive[1],[]);
+            }
+            //在做好两层索引后，把callback push进去
+            callbacks.get(reactive[0]).get(reactive[1]).push(callback)
+        }
+    }
+
+    function reactive(object){
+        
+        if(reactivties.has(object))
+            return reactivties.get(object)
+
+        let proxy =  new Proxy(object,{
+            set(obj,prop,val){
+                obj[prop] = val
+                console.log(obj,prop,val)
+                //判断多层的情况
+                if(callbacks.get(obj))
+                    if(callbacks.get(obj).get(prop))
+                        for(let callback of callbacks.get(obj).get(prop)){
+                            callback()
+                        }
+                return obj[prop]
+            },
+            get(obj,prop){
+                console.log(obj,prop)
+                //在调用callback的时候，打印po.a之后，会调用reactive当中的get（），利用这个机制即可成功监听effect执行后，调用了哪些变量。
+                usedReactivties.push([obj,prop])
+                if(typeof obj[prop] === "object"){
+                    return reactive(obj[prop])
+                }
+                return obj[prop]
+            }
+        })
+
+        reactivties.set(object,proxy);
+
+        return proxy
+    }
+</script>

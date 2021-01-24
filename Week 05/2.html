@@ -1,0 +1,84 @@
+<div id="container" >文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+    文字 文字 文字 文字 文字 文字 文字 文字 
+</div>
+<div id="dragable" style="display: inline-block;width:100px;height:100px;background-color:pink;"></div>
+<script>
+    //移动过后的x与y的坐标值
+    let baseX = 0,baseY = 0; 
+    let dragable = document.getElementById('dragable');
+    dragable.addEventListener('mousedown',event=>{
+        // 初始x与y的坐标值
+        let startX = event.clientX,startY = event.clientY;
+        let up = event => {
+            baseX = baseX + event.clientX - startX;
+            baseY = baseY + event.clientY - startY;
+            document.removeEventListener('mouseup',up)
+            document.removeEventListener('mousemove',move)
+        }
+
+        let move = event => {
+            //获取到插入点最近的位置
+            let range = getNearest(event.clientX,event.clientY);
+            //range的insertNode方法：如果将新节点添加到一个文本节点，则该例程在插入点处被分割，插入发生在两个文本数组之间。
+            range.insertNode(dragable);
+            // dragable.style.transform=`translate(${baseX + event.clientX - startX}px,${baseY + event.clientY - startY}px)`
+        }
+
+        document.addEventListener('mouseup',up)
+        document.addEventListener('mousemove',move)
+        
+    })
+    let ranges = [];
+    //获取文本的每一个间隙，用于插入方块。
+    let container = document.getElementById('container');
+    for(let i = 0;i<container.childNodes[0].textContent.length;i++){
+        let range = document.createRange();
+        //设置range的开始和结束位置
+        range.setStart(container.childNodes[0],i);
+        range.setEnd(container.childNodes[0],i);
+
+        console.log(range.getBoundingClientRect());
+        ranges.push(range);
+    }
+
+    function getNearest(x,y){
+        let min = Infinity;
+        let nearest = null;
+        for(let range of ranges){
+            let rect = range.getBoundingClientRect();
+            let distance = (rect.x - x)**2 + (rect.y - y)**2;
+            //因为infinity是无穷大，所以第一次进来的时候，不管distance多大，都会小于min，这样的话就会第一次判断成功进入if内部作用域
+            if(distance < min){
+                nearest = range;
+                min = distance;
+            }
+        }
+        return nearest
+    }
+    document.addEventListener('selectstart',event=>event.preventDefault());
+</script>
