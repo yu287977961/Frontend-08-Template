@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tutorial Demo</title>
+  </head>
+  <body>
+    <!-- 图的画布容器-->
+    <div id="mountNode"></div>
+
+    <!-- 引入 G6-->
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.7.1/dist/g6.min.js"></script>
+
+    <script>
+      // 定义数据源
+      let obj = Object.getOwnPropertyNames(this);
+      console.log(obj)
+      const data = {
+        // 点集
+        nodes: [
+          {
+            id: 'Realm',
+            x: 1000,
+            y: 1000,
+            label:'Realm'
+          },
+        //   {
+        //     id: 'node2',
+        //     x: 300,
+        //     y: 200,
+        //   },
+        ],
+        // 边集
+        edges: [
+          // 表示一条从 node1 节点连接到 node2 节点的边
+         
+        ],
+      };
+        let i = 0
+        for (let x=0 ;x <= obj.length;x++) {
+            let a = i+1;
+            let str = {
+                id:"id"+a,
+                label:obj[x],
+            }
+            data.nodes.push(str)
+            let atr = {
+                source: 'Realm',
+                target: "id"+a,
+                }
+            data.edges.push(atr)
+            i++
+        }
+        console.log(data)
+      // 创建 G6 图实例
+      const graph = new G6.Graph({
+        container: 'mountNode', // 指定图画布的容器 id，与第 9 行的容器对应
+        // 画布宽高
+        width: 5000,
+        height: 5000,
+        fitView:true,
+        layout: {                // Object，可选，布局的方法及其配置项，默认为 random 布局。
+            type: 'concentric',
+            center: [ 200, 200 ],     // 可选，
+            linkDistance: 50,         // 可选，边长
+            preventOverlap: true,     // 可选，必须配合 nodeSize
+            nodeSize: 30,             // 可选
+            sweep: 10,                // 可选
+            equidistant: false,       // 可选
+            startAngle: 0,            // 可选
+            clockwise: false,         // 可选
+            maxLevelDiff: 10,         // 可选
+            sortBy: 'degree',        // 可选
+            workerEnabled: true       // 可选，开启 web-worker
+        }
+      });
+      // 读取数据
+      graph.data(data);
+      // 渲染图
+      graph.render();
+    </script>
+  </body>
+</html>
