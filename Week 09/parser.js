@@ -3,7 +3,7 @@ let currentToken = null;
 let currentAttribute = null;
 
 function emit(token){
-    console.log(token)
+    console.log(token) 
 }
 
 function data(c){
