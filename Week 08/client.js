@@ -1,5 +1,5 @@
 const net = require('net')
-const parser = require('../Week 09/parser.js')
+const parse = require('../Week 09/parser.js')
 class ResponseParser {
     constructor(){
         this.WAITING_STATUS_LINE = 0;
@@ -38,53 +38,51 @@ class ResponseParser {
         }
     }
     receiveChar(char){//状态机判断
-        if(this.current === this.WAITING_STATUS_LINE) {
-            if(char === '\r') {
+        if (this.current === this.WAITING_STATUS_LINE) {
+            if (char === '\r') {
                 this.current = this.WAITING_STATUS_LINE_END;
             } else {
-                this.statusLine += char ;
+                this.statusline += char;
             }
-        } else if(this.current === this.WAITING_STATUS_LINE_END) {
-            if(char === '\n') {
+        } else if (this.current === this.WAITING_STATUS_LINE_END) {
+            if (char === '\n') {
                 this.current = this.WAITING_HEADER_NAME;
             }
-        } else if(this.current === this.WAITING_HEADER_NAME) {
-            if(char === ':') {
+        } else if (this.current === this.WAITING_HEADER_NAME) {
+            if (char === ':') {
                 this.current = this.WAITING_HEADER_SPACE;
-            } else if(char === '\r') {
-                this.current = this.WAITING_HEADER_BLOCK_END;//空行状态找到后，进行header判断
-                if(this.headers['Transfer-Encoding'] === 'chunked')//node默认值为chunked
+            } else if (char === '\r') {
+                this.current = this.WAITING_HEADER_BLOCK_END;
+                if (this.headers['Transfer-Encoding'] === 'chunked') {
                     this.bodyParser = new TrunkedBodyParser();
-
-            }else{
+                }
+            } else {
                 this.headerName += char;
             }
-        } else if(this.current === this.WAITING_HEADER_SPACE) {
-            if(char === ' ') {
+        } else if (this.current === this.WAITING_HEADER_SPACE) {
+            if (char === ' ') {
                 this.current = this.WAITING_HEADER_VALUE;
             }
-        } else if(this.current === this.WAITING_HEADER_VALUE) {
-        } else if(this.current === this.WAITING_HEADER_VALUE) {
-            if(char === '\r') {
+        } else if (this.current === this.WAITING_HEADER_VALUE) {
+            if (char === '\r') {
                 this.current = this.WAITING_HEADER_LINE_END;
-                this.headers [this.headerName] = this.headerValue;
+                this.headers[this.headerName] = this.headerValue;
                 this.headerName = "";
                 this.headerValue = "";
             } else {
                 this.headerValue += char;
             }
-        } else if(this.current === this.WAITING_HEADER_LINE_END) {
-            if(char === '\n') {
+        } else if (this.current === this.WAITING_HEADER_LINE_END) {
+            if (char === '\n') {
                 this.current = this.WAITING_HEADER_NAME;
             }
-        } else if(this.current === this.WAITING_HEADER_BLOCK_END) {
-            if(char === '\n') {
-                this.current = this.WAITING_BODY ;
+        } else if (this.current === this.WAITING_HEADER_BLOCK_END) {
+            if (char === '\n') {
+                this.current = this.WAITING_BODY;
             }
-        } else if(this.current === this.WAITING_BODY) {
-            this.bodyParser.receiveChar(char);
-
-        }   
+        } else if (this.current === this.WAITING_BODY) {
+            this.bodyParser && this.bodyParser.receiveChar(char);
+        }
     }
 }
 
@@ -102,7 +100,7 @@ class TrunkedBodyParser {
     }
     receiveChar(char){
         if(this.current === this.WAITING_LENGTH) {
-            if(chad === '\r') {
+            if(char === '\r') {
                 if(this.length === 0) {
                     this.isFinished = true;
                 }
@@ -202,9 +200,9 @@ void async function (){//void定义的函数会自动运行
         }
     });
     let response = await request.send();//通过send发送请求，返回值是服务端的请求结果。
-    console.log(response);
+    // console.log(response);
 
-    let dom  = await parser.parseHTML(response.body);//parse处理html
-    console.log(dom)
+    let dom  = await parse.parseHTML(response.body);//parse处理html
+    // console.log(dom)
 }();
 

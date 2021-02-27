@@ -146,6 +146,24 @@ function singleQuotedAttributeValue(c){
 
 }
 
+function afterQuotedAttributeValue(c) {
+    if (c.match(/^[\t\n\f ]$/)) {
+        return beforeAttributeName;
+    } else if (c == "/") {
+        return selfClosingStartTag;
+    } else if (c == ">") {
+        currentToken[currentAttribute.name] = currentAttribute.value;
+        emit(currentToken);
+        return data;
+    } else if(c==EOF){
+
+    } else {
+        currentAttribute.value += c;
+        return doubleQuotedAttributeValue;
+    }
+
+}
+
 function UnquotedAttributeValue(c){
     if(c.match(/^[\t\n\f ]$/)){
         currentToken[currentAttribute.name]=currentAttribute.value;
@@ -206,10 +224,12 @@ function afterAttributeName(c){
     }
 
 }
-module.exports.parseHTML = function parseHTML(data){
+
+module.exports.parseHTML = function parseHTML(html){
     let state = data;
-    for(let c of data){
+    for(let c of html){
         state = state(c);
     }
     state = state(EOF);
+    // console.log(data);
 }
