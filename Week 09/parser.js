@@ -245,9 +245,15 @@ function attributeName(c) {
     } else if (c == "=") {
         return beforeAttributeValue;
     } else if (c == "/u000") {
+<<<<<<< HEAD
 
     } else if (c == "\"" || c == "\'" || c == "<") {
 
+=======
+
+    } else if (c == "\"" || c == "\'" || c == "<") {
+
+>>>>>>> 第九课补全++
     } else {
         currentAttribute.name += c;
         return attributeName;
@@ -280,9 +286,15 @@ function doubleQuotedAttributeValue(c) {
         return afterQuotedAttributeValue;
 
     } else if (c == "\u0000") {
+<<<<<<< HEAD
 
     } else if (c == EOF) {
 
+=======
+
+    } else if (c == EOF) {
+
+>>>>>>> 第九课补全++
     } else {
         currentAttribute.value += c;
         return doubleQuotedAttributeValue;
@@ -296,9 +308,15 @@ function singleQuotedAttributeValue(c) {
         return afterQuotedAttributeValue;
 
     } else if (c == "\u0000") {
+<<<<<<< HEAD
 
     } else if (c == EOF) {
 
+=======
+
+    } else if (c == EOF) {
+
+>>>>>>> 第九课补全++
     } else {
         currentAttribute.value += c;
         return singleQuotedAttributeValue;
@@ -337,11 +355,19 @@ function UnquotedAttributeValue(c) {
         emit(currentToken);
         return data;
     } else if (c == "\u0000") {
+<<<<<<< HEAD
 
     } else if (c == "\"" || c == "\'" || c == "<" || c == "=" || c == "`") {
 
     } else if (c == EOF) {
 
+=======
+
+    } else if (c == "\"" || c == "\'" || c == "<" || c == "=" || c == "`") {
+
+    } else if (c == EOF) {
+
+>>>>>>> 第九课补全++
     } else {
         currentAttribute.value += c;
         return UnquotedAttributeValue;
@@ -392,4 +418,8 @@ module.exports.parseHTML = function parseHTML(html) {
     }
     state = state(EOF);
     console.log(stack[0]);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 第九课补全++
