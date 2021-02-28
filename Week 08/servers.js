@@ -10,7 +10,19 @@ http.createServer((request, response) => {
         body = Buffer.concat(body).toString();
         console.log("body:", body);
         response.writeHead(200, {'Content-Type': 'text/htmt'});
-        response.end('<html class="abc" data-a="124">Hello World</html>');
+        response.end(`<html class="abc" data-a="124">
+        <head>
+        <style>
+        body div #myid{
+            width:100px
+        }
+        body div img{
+            width:200px
+        }
+        </style>
+        </head>
+        <input type="text" />Hello World
+        </html>`);
     });
 }). listen(8089);
 
