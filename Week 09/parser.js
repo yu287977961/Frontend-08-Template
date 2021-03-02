@@ -276,7 +276,7 @@ function beforeAttributeValue(c) {
 function doubleQuotedAttributeValue(c) {
     if (c == "\"") {
         currentToken[currentAttribute.name] = currentAttribute.value;
-        emit(currentToken)
+        
         return afterQuotedAttributeValue;
 
     } else if (c == "\u0000") {
@@ -353,6 +353,7 @@ function UnquotedAttributeValue(c) {
 function selfClosingStartTag(c) {
     if (c == ">") {
         currentToken.isSelfClosing = true;
+        emit(currentToken)
         return data;
     } else if (c == EOF) {
 
