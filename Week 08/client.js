@@ -168,10 +168,10 @@ class Request{
                 console.log(data.toString());//服务端收到的data进行tostring解析
                 parser.receive(data.toString());//解析后传给parser
 
-                if(parser.isFinished){
+                // if(parser.isFinished){
                     resolve(parser.response); //根据parser的状态resolve
                     connection.end() ;
-                }
+                // }
             });
             connection.on('error',(err) =>{
                 reject(err);
