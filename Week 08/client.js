@@ -1,5 +1,8 @@
 const net = require('net')
 const parse = require('../Week 09/parser.js')
+const render = require('../Week 10/render.js')
+const images = require('images')
+
 class ResponseParser {
     constructor(){
         this.WAITING_STATUS_LINE = 0;
@@ -203,6 +206,11 @@ void async function (){//void定义的函数会自动运行
     // console.log(response);
 
     let dom  = await parse.parseHTML(response.body);//parse处理html
-    // console.log(dom)
+
+    let viewport = images(800, 600);
+    render(viewport, dom[0].children[0].children[3].children[1]);
+
+    viewport.save('viewport.jpg')
+    console.log(JSON.stringify(dom, null, '  '));
 }();
 

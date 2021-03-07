@@ -1,5 +1,6 @@
 const EOF = Symbol('EOF')//结束状态
 const css = require('css');
+const { layout } = require('../Week 10/layout');
 
 //加入一个新函数addCSSRules，css规则暂存到一个数组当中
 let rules = [];
@@ -96,7 +97,15 @@ function compare(sp1, sp2){
     return sp1[3] - sp2[3];
 }    
     
-
+/**arr2包含arr1 */
+function compareArr(arr1, arr2) {
+    for (let item1 of arr1) {
+      if (!arr2.includes(item1)) {
+        return false;
+      }
+    }
+    return true;
+  }
 function computeCSS(element) {
     var elements = stack.slice().reverse();
     if (!element.computedStyle) {
@@ -181,6 +190,7 @@ function emit(token) {
             if (top.tagName === "style") {
                 addCSSRules(top.children[0].content);
             }
+            layout(top)
             stack.pop();
         }
         currentTextNode = null;
@@ -383,4 +393,5 @@ module.exports.parseHTML = function parseHTML(html) {
     }
     state = state(EOF);
     console.log(stack[0]);
+    return stack
 }
