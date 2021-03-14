@@ -1,0 +1,158 @@
+<head>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+    </script>
+</head>
+<div>
+    <div id="id" class='class'>
+        123124142
+    </div>
+</div>
+
+<script>
+let tagName=[]
+let tagValue = ''
+let tagState = document
+
+function data(c) {
+    if (c.match(/[a-zA-Z]$/)||c==='*') {//标签选择器
+        return tag(c);
+    } else if (c.match(/[\s]$/)) {//子代选择器
+        let a = {
+            state:"child",
+            name:"child",
+            value:tagValue
+        }
+        tagName.push(a)
+        return data;
+    } else if (c==="#") {//id选择器
+        return idChild;
+    } else if (c===".") {//class选择器
+        return classChild;
+    } else if (c===">") {//相邻子代选择器 必须是他的直接上级父元素
+        return signChild;
+    } else if (c==="~") {//相邻兄弟选择器 可选择紧接在另一元素后的所有同级的指定元素，且二者有相同父元素。
+        return adAllChild;
+    } else if (c==="+") {//相邻兄弟选择器 可选择紧接在另一元素后的元素，且二者有相同父元素。
+        return adChild;
+    }else if (c==="|") {//可以选择某一个列
+        return listChild;
+    }
+}
+
+function tag(c){
+    if (c.match(/^[a-zA-Z]$/)||c === '#'||c==='.') {//如果是标签选择器，则tagName获取其标签并且判断是复合还是复杂
+        tagValue +=c
+        return tag;
+    }else {
+        let a = {
+            state:"tag",
+            name:"tag",
+            value:tagValue
+        }
+        tagName.push(a)
+        tagValue =''
+        return data(c);
+    }
+}
+
+function idChild(c){
+    if (c.match(/^[a-zA-Z]$/)) {
+        tagValue +=c
+        return idChild;
+    }else if(c==='EOF'){
+        let a = {
+            state:"tag",
+            name:"id",
+            value:tagValue
+        }
+        tagName.push(a)
+        tagValue =''
+    }else{
+        let a = {
+            state:"tag",
+            name:"id",
+            value:tagValue
+        }
+        tagName.push(a)
+        tagValue =''
+        return data(c);
+    }
+}
+function classChild(c){
+    if (c.match(/^[a-zA-Z]$/)) {
+        tagValue +=c
+        return classChild;
+    }else if(c==='EOF'){
+        let a = {
+            state:"tag",
+            name:"class",
+            value:tagValue
+        }
+        tagName.push(a)
+        tagValue =''
+    }else{
+        let a = {
+            state:"tag",
+            name:"class",
+            value:tagValue
+        }
+        tagName.push(a)
+        tagValue =''
+        return data(c);
+    }
+}
+
+function match(selector, element) {
+    let state = data
+    for(let c of selector){
+        state = state(c);
+    }
+    state = state("EOF");
+    console.log(tagName)
+    let abc = 0 //tag状态
+    for(let j = 0;j < tagName.length; j++) {
+        if(tagName[j].state == 'tag'){
+            if(tagName[j].name=='tag'){
+                if(abc == 0){
+                    tagState = tagState.getElementsByTagName(tagName[j].value)[0]
+                    abc = 1
+                }
+            }else if(tagName[j].name=='id'){
+                if(abc == 0){
+                    tagState = tagState.getElementById(tagName[j].value)
+                    abc = 1
+                }else if(abc==1){
+                    if(tagState = $.find('#'+tagName[j].value)){
+                        tagState = $.find('#'+tagName[j].value)[0]
+                    }else{
+                        tagState = $.find('#'+tagName[j].value)
+                    }
+                }
+                
+            }else if(tagName[j].name=='class'){
+                if(abc == 0){
+                    tagState = tagState.getElementsByClassName(tagName[j].value)
+                    abc = 1
+                }else if(abc==1){
+                    if(tagState = $.find('.'+tagName[j].value)){
+                        tagState = $.find('.'+tagName[j].value)[0]
+                    }else{
+                        tagState = $.find('.'+tagName[j].value)
+                    }
+                }
+                
+            }
+            
+        }else if(tagName[j].state == 'child'){
+            tagState = tagState.children
+        }
+    }
+    if (tagState == element){
+        return true;
+    }
+        
+}
+
+
+console.log(match("div .class#id", document.getElementById("id")));
+</script>
